@@ -7,11 +7,11 @@ cd "$SCRIPT_DIR" || exit
 if [[ "${WEB_LOADER_ENGINE,,}" == "playwright" ]]; then
     if [[ -z "${PLAYWRIGHT_WS_URL}" ]]; then
         echo "Installing Playwright browsers..."
-        playwright install chromium
-        playwright install-deps chromium
+        uv run playwright install chromium
+        uv run playwright install-deps chromium
     fi
 
-    python -c "import nltk; nltk.download('punkt_tab')"
+    uv run python -c "import nltk; nltk.download('punkt_tab')"
 fi
 
 if [ -n "${WEBUI_SECRET_KEY_FILE}" ]; then
@@ -50,7 +50,7 @@ if [ -n "$SPACE_ID" ]; then
   echo "Configuring for HuggingFace Space deployment"
   if [ -n "$ADMIN_USER_EMAIL" ] && [ -n "$ADMIN_USER_PASSWORD" ]; then
     echo "Admin user configured, creating"
-    WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" uvicorn open_webui.main:app --host "$HOST" --port "$PORT" --forwarded-allow-ips '*' &
+    WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" uv run uvicorn open_webui.main:app --host "$HOST" --port "$PORT" --forwarded-allow-ips '*' &
     webui_pid=$!
     echo "Waiting for webui to start..."
     while ! curl -s http://localhost:8080/health > /dev/null; do
@@ -71,4 +71,4 @@ fi
 
 PYTHON_CMD=$(command -v python3 || command -v python)
 
-WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" exec "$PYTHON_CMD" -m uvicorn open_webui.main:app --host "$HOST" --port "$PORT" --forwarded-allow-ips '*' --workers "${UVICORN_WORKERS:-1}"
+WEBUI_SECRET_KEY="$WEBUI_SECRET_KEY" exec uv run python -m uvicorn open_webui.main:app --host "$HOST" --port "$PORT" --forwarded-allow-ips '*' --workers "${UVICORN_WORKERS:-1}"

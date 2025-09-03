@@ -103,6 +103,7 @@ dependencies = [
     "youtube-transcript-api==1.1.0",
     "pytube==15.0.0",
 
+    "typer",
     "pydub",
     "ddgs==9.0.0",
 
