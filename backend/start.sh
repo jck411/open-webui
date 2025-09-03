@@ -22,6 +22,9 @@ fi
 
 PORT="${PORT:-8080}"
 HOST="${HOST:-0.0.0.0}"
+
+# Disable authentication for local/personal use
+export WEBUI_AUTH=false
 if test "$WEBUI_SECRET_KEY $WEBUI_JWT_SECRET_KEY" = " "; then
   echo "Loading WEBUI_SECRET_KEY from file, not provided as an environment variable."
 
