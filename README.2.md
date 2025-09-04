@@ -4,7 +4,21 @@
 
 ## Quick Start
 
+**Option 1: Automated Setup (Recommended)**
 ```bash
+./setup.sh
+cd backend && ./start.sh
+```
+
+**Option 2: Manual Setup**
+```bash
+# 1. Install dependencies
+uv sync
+
+# 2. Set up vector database (avoids ChromaDB SQLite FTS5 issues)
+echo "VECTOR_DB=milvus" > .env
+
+# 3. Start server
 cd backend
 ./start.sh
 ```
@@ -48,7 +62,33 @@ curl -X POST "http://localhost:8080/api/v1/chats/new" \
 
 ## Notes
 
-- Database: `backend/data/webui.db` (SQLite)
+- **Vector Database:** Uses Milvus (simpler than ChromaDB, no SQLite FTS5 issues)
+- **Database:** `backend/data/webui.db` (SQLite)
+- **Vector Storage:** `backend/data/vector_db/milvus.db` (SQLite)
 - Tokens don't expire (`expires_at: null`)
 - Reset database: delete `backend/data/webui.db`
+- Reset vector DB: delete `backend/data/vector_db/milvus.db`
 - **Local development only** - default credentials not for production
+
+## Troubleshooting
+
+### If you get ChromaDB/SQLite FTS5 errors:
+The default ChromaDB has SQLite FTS5 dependency issues. This repo uses Milvus instead:
+
+```bash
+# Ensure .env has the vector DB setting
+echo "VECTOR_DB=milvus" > .env
+
+# Clean any existing ChromaDB data
+rm -rf backend/data/vector_db/chroma*
+
+# Restart
+cd backend && ./start.sh
+```
+
+### Switch to PostgreSQL with pgvector (future):
+```bash
+# In .env file
+VECTOR_DB=pgvector
+PGVECTOR_DB_URL=postgresql://user:pass@localhost:5432/openwebui
+```
